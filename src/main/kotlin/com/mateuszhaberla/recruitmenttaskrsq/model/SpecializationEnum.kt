@@ -1,0 +1,15 @@
+package com.mateuszhaberla.recruitmenttaskrsq.model
+
+enum class SpecializationEnum() {
+    ALLERGY_AND_IMMUNOLOGY,
+    ANESTHESIOLOGY,
+    DERMATOLOGY,
+    DIAGNOSTIC,
+    RADIOLOGY,
+    FAMILY_MEDICINE,
+    NEUROLOGY_OBSTETRICS,
+    GYNECOLOGY,
+    PEDIATRICS,
+    PHYSICAL_MEDICINE_AND_REHABILITATION,
+    PSYCHIATRY
+}
