@@ -1,13 +1,12 @@
 package com.mateuszhaberla.recruitmenttaskrsq.model
 
-import java.time.LocalDate
-import java.time.LocalTime
+import java.time.LocalDateTime
 
 
 data class AppointmentDTO(
         val id: Long,
-        val date: LocalDate,
-        val hour: LocalTime,
+        val date: LocalDateTime,
+        val hour: LocalDateTime,
         val place: String,
         val doctor: Long,
         val patient: Long
