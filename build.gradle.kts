@@ -21,11 +21,15 @@ dependencies {
 	annotationProcessor("org.projectlombok:lombok:1.18.12")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	implementation("io.springfox:springfox-swagger-ui:2.9.2")
 	implementation("io.springfox:springfox-swagger2:2.9.2")
+
+	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+	runtimeOnly("com.fasterxml.jackson.module:jackson-modules-java8:2.10.3")
+	runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.10.3")
+	testCompileOnly("org.junit.jupiter:junit-jupiter-api:5.6.1")
 
 	runtimeOnly("com.h2database:h2")
 	testImplementation("org.springframework.boot:spring-boot-starter-test") {
