@@ -10,6 +10,7 @@ import com.mateuszhaberla.recruitmenttaskrsq.model.AppointmentDTO
 import com.mateuszhaberla.recruitmenttaskrsq.repository.AppointmentRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 import java.util.Optional
 
 
@@ -51,5 +52,10 @@ class AppointmentCrudService @Autowired constructor(
                 }
                 .map { appointmentToUpdateMap -> mapper.convertValue(appointmentToUpdateMap, Appointment::class.java) }
                 .map { appointmentRepository.save(it) }
+    }
+
+    fun changeTimeOfAppointment(id: Long, date: LocalDateTime): Optional<Appointment> {
+        val map = hashMapOf("date" to date.toString())
+        return patch(id, map)
     }
 }
