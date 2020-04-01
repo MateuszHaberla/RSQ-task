@@ -40,6 +40,13 @@ class PatientCrudController @Autowired constructor(val patientCrudService: Patie
 
     }
 
+    @GetMapping("/patients")
+    @ApiOperation(value = "Read All Patients")
+    fun readAll(): List<ResponseEntity<Patient>> {
+        return patientCrudService.readAll()
+                .map { ResponseEntity.ok(it) }
+    }
+
     @PutMapping("/patients")
     @ApiOperation(value = "Update Patient")
     fun update(@RequestBody patientDto: PatientDTO): ResponseEntity<Patient> {
