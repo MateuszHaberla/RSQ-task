@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.time.LocalDateTime
 
 @RestController
 @RequestMapping(path = ["/v1/api"])
@@ -55,6 +56,15 @@ class AppointmentController @Autowired constructor(
     @ApiOperation(value = "Patch Appointments")
     fun patch(@PathVariable("id") id: Long, @RequestBody appointmentChangesMap: HashMap<String, String>): ResponseEntity<Appointment> {
         return appointmentCrudService.patch(id, appointmentChangesMap)
+                .map { ResponseEntity.ok(it) }
+                .orElseGet { ResponseEntity.status(HttpStatus.NOT_FOUND).build() }
+
+    }
+
+    @PatchMapping("/timeChange/{id}")
+    @ApiOperation(value = "Patch Appointments")
+    fun changeTimeOfAppointment(@PathVariable("id") id: Long, @RequestBody hourOfExistingVisit: LocalDateTime): ResponseEntity<Appointment> {
+        return appointmentCrudService.changeTimeOfAppointment(id, hourOfExistingVisit)
                 .map { ResponseEntity.ok(it) }
                 .orElseGet { ResponseEntity.status(HttpStatus.NOT_FOUND).build() }
 
