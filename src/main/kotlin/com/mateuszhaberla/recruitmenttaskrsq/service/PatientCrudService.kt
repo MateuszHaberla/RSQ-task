@@ -22,6 +22,10 @@ class PatientCrudService @Autowired constructor(
         return patientRepository.findById(id)
     }
 
+    fun readAll(): MutableList<Patient> {
+        return patientRepository.findAll()
+    }
+
     fun update(patientDto: PatientDTO): Optional<Patient> {
         val patientToUpdate: Patient = patientMapper.mapDtoToPatient(patientDto)
         return patientRepository.findById(patientToUpdate.id)
