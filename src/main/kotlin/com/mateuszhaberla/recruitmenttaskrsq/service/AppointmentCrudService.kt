@@ -40,4 +40,16 @@ class AppointmentCrudService @Autowired constructor(
             false
         }
     }
+
+    fun patch(id: Long, appointmentChangesMap: HashMap<String, String>): Optional<Appointment> {
+        return Optional.of(appointmentRepository.findById(id))
+                .map { appointment -> mapper.convertValue(appointment, Map::class.java) }
+                .map { appointmentToUpdateMap -> appointmentToUpdateMap.toMutableMap() }
+                .map { appointmentToUpdateMap ->
+                    appointmentChangesMap.forEach { appointmentToUpdateMap[it.key] = it.value }
+                    appointmentToUpdateMap
+                }
+                .map { appointmentToUpdateMap -> mapper.convertValue(appointmentToUpdateMap, Appointment::class.java) }
+                .map { appointmentRepository.save(it) }
+    }
 }
