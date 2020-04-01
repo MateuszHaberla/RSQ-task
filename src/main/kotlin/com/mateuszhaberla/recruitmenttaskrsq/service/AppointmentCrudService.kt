@@ -27,6 +27,14 @@ class AppointmentCrudService @Autowired constructor(
         return appointmentRepository.save(appointment)
     }
 
+    fun read(id: Long?): MutableList<Appointment> {
+        return appointmentRepository.findByPatient(id)
+    }
+
+    fun readAll(): MutableList<Appointment> {
+        return appointmentRepository.findAll()
+    }
+
     fun update(appointmentDTO: AppointmentDTO): Optional<Appointment> {
         val appointmentToUpdate: Appointment = appointmentMapper.mapDtoToAppointment(appointmentDTO)
         return appointmentRepository.findById(appointmentToUpdate.id)
