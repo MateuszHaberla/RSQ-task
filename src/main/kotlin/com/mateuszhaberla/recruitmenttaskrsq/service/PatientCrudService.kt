@@ -1,24 +1,20 @@
 package com.mateuszhaberla.recruitmenttaskrsq.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
+
+import com.mateuszhaberla.recruitmenttaskrsq.config.Config
+import com.mateuszhaberla.recruitmenttaskrsq.dto.PatientDto
 import com.mateuszhaberla.recruitmenttaskrsq.mapper.PatientMapper
 import com.mateuszhaberla.recruitmenttaskrsq.model.Patient
-import com.mateuszhaberla.recruitmenttaskrsq.model.PatientDTO
 import com.mateuszhaberla.recruitmenttaskrsq.repository.PatientRepository
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.Optional
 
 @Service
-class PatientCrudService @Autowired constructor(
+class PatientCrudService(
         private val patientRepository: PatientRepository,
         private val patientMapper: PatientMapper,
-        private val mapper: ObjectMapper = ObjectMapper().registerModule(KotlinModule())
-                .registerModule(JavaTimeModule())
-                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+        private val mapper: ObjectMapper = Config().getObjectMapper()
 ) {
 
     fun create(patient: Patient): Patient {
@@ -33,26 +29,25 @@ class PatientCrudService @Autowired constructor(
         return patientRepository.findAll()
     }
 
-    fun update(patientDto: PatientDTO): Optional<Patient> {
+    fun update(patientDto: PatientDto): Optional<Patient> {
         val patientToUpdate: Patient = patientMapper.mapDtoToPatient(patientDto)
         return patientRepository.findById(patientToUpdate.id)
                 .map { patientRepository.save(patientToUpdate) }
     }
 
     fun delete(id: Long): Boolean {
-        return if(patientRepository.existsById(id)) {
+        return if (patientRepository.existsById(id)) {
             patientRepository.deleteById(id)
             true
-        }
-        else { false }
+        } else { false }
     }
 
-    fun patch(id:Long, patientChangesMap: HashMap<String, String>): Optional<Patient> {
+    fun patch(id: Long, patientChangesMap: HashMap<String, String>): Optional<Patient> {
         return Optional.of(patientRepository.findById(id))
                 .map { patient -> mapper.convertValue(patient, Map::class.java) }
                 .map { patientToUpdateMap -> patientToUpdateMap.toMutableMap() }
                 .map { patientToUpdateMap ->
-                    patientChangesMap.forEach{ patientToUpdateMap[it.key] = it.value }
+                    patientChangesMap.forEach { patientToUpdateMap[it.key] = it.value }
                     patientToUpdateMap
                 }
                 .map { patientToUpdateMap -> mapper.convertValue(patientToUpdateMap, Patient::class.java) }
