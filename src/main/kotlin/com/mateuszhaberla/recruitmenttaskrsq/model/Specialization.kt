@@ -1,6 +1,6 @@
 package com.mateuszhaberla.recruitmenttaskrsq.model
 
-enum class SpecializationEnum() {
+enum class Specialization {
     ALLERGY_AND_IMMUNOLOGY,
     ANESTHESIOLOGY,
     DERMATOLOGY,
