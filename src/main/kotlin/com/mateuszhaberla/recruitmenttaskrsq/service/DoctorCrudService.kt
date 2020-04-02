@@ -39,4 +39,16 @@ class DoctorCrudService(
             false
         }
     }
+
+    fun patch(id: Long, doctorChangesMap: HashMap<String, String>): Optional<Doctor> {
+        return Optional.of(doctorRepository.findById(id))
+                .map { doctor -> mapper.convertValue(doctor, Map::class.java) }
+                .map { doctorToUpdateMap -> doctorToUpdateMap.toMutableMap() }
+                .map { doctorToUpdateMap ->
+                    doctorChangesMap.forEach { doctorToUpdateMap[it.key] = it.value }
+                    doctorToUpdateMap
+                }
+                .map { doctorToUpdateMap -> mapper.convertValue(doctorToUpdateMap, Doctor::class.java) }
+                .map { doctorRepository.save(it) }
+    }
 }
