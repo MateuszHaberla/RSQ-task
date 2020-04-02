@@ -1,14 +1,11 @@
 package com.mateuszhaberla.recruitmenttaskrsq.controller
 
+import com.mateuszhaberla.recruitmenttaskrsq.dto.AppointmentDto
 import com.mateuszhaberla.recruitmenttaskrsq.model.Appointment
-import com.mateuszhaberla.recruitmenttaskrsq.model.AppointmentDTO
 import com.mateuszhaberla.recruitmenttaskrsq.service.AppointmentCrudService
 import io.swagger.annotations.ApiOperation
-import lombok.RequiredArgsConstructor
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
@@ -23,9 +20,7 @@ import java.util.Optional
 
 @RestController
 @RequestMapping(path = ["/v1/api"])
-@Validated
-@RequiredArgsConstructor
-class AppointmentController @Autowired constructor(
+class AppointmentController(
         private val appointmentCrudService: AppointmentCrudService
 ) {
 
@@ -40,20 +35,23 @@ class AppointmentController @Autowired constructor(
 
     @GetMapping(value = ["/appointments", "/appointments/{id}"])
     @ApiOperation(value = "Read All Appointments")
-    fun readAllOrOne(@PathVariable(value = "id", required = false) id: Long?) : ResponseEntity<MutableList<Appointment>> {
+    fun readAllOrOne(@PathVariable(value = "id", required = false) id: Long?): ResponseEntity<MutableList<Appointment>> {
         val listOfAppointments: MutableList<Appointment> = Optional.ofNullable(id)
                 .map { appointmentCrudService.read(id) }
                 .orElseGet { appointmentCrudService.readAll() }
 
-        return if (listOfAppointments.isEmpty())
+        return if (listOfAppointments.isEmpty()) {
             ResponseEntity.status(HttpStatus.NOT_FOUND).build()
-        else ResponseEntity.ok().body(listOfAppointments)
+        }
+        else {
+            ResponseEntity.ok().body(listOfAppointments)
+        }
     }
 
     @PutMapping("/appointments")
     @ApiOperation(value = "Update Appointments")
-    fun update(@RequestBody appointmentDTO: AppointmentDTO): ResponseEntity<Appointment> {
-        return appointmentCrudService.update(appointmentDTO)
+    fun update(@RequestBody appointmentDto: AppointmentDto): ResponseEntity<Appointment> {
+        return appointmentCrudService.update(appointmentDto)
                 .map { ResponseEntity.ok(it) }
                 .orElseGet { ResponseEntity.status(HttpStatus.NOT_FOUND).build() }
     }
