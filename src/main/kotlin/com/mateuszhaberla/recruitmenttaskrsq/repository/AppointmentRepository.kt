@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface AppointmentRepository : JpaRepository<Appointment, Long> {
-    fun findByPatient(@Param("patient") patientId: Long?): MutableList<Appointment>
+    fun findByPatientId(@Param("patientId") patientId: Long?): MutableList<Appointment>
 }
