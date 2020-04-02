@@ -10,8 +10,12 @@ import javax.persistence.Id
 @Entity
 @NoArgsConstructor
 data class Patient(
-        @Id @GeneratedValue(strategy = GenerationType.AUTO) val id: Long,
-        @Column(nullable = false) val name: String,
-        @Column(nullable = false) val surname: String,
-        @Column(nullable = false) val address: String
+        @Id @GeneratedValue(strategy = GenerationType.AUTO)
+        val id: Long,
+        @Column(nullable = false)
+        val name: String,
+        @Column(nullable = false)
+        val surname: String,
+        @Column(nullable = false)
+        val address: String
 )
