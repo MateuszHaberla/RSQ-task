@@ -29,7 +29,6 @@ dependencies {
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	runtimeOnly("com.fasterxml.jackson.module:jackson-modules-java8:2.10.3")
 	runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.10.3")
-	testCompileOnly("org.junit.jupiter:junit-jupiter-api:5.6.1")
 
 	runtimeOnly("com.h2database:h2")
 	testImplementation("org.springframework.boot:spring-boot-starter-test") {
