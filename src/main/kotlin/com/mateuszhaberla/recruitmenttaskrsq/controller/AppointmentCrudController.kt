@@ -20,7 +20,7 @@ import java.util.Optional
 
 @RestController
 @RequestMapping(path = ["/v1/api"])
-class AppointmentController(
+class AppointmentCrudController(
         private val appointmentCrudService: AppointmentCrudService
 ) {
 
