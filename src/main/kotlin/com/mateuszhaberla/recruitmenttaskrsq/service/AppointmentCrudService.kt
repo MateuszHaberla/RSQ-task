@@ -73,7 +73,7 @@ class AppointmentCrudService(
     }
 
     fun changeTimeOfAppointment(id: Long, date: LocalDateTime): Optional<AppointmentDto> {
-        val map = hashMapOf("date" to date.toString())
+        val map = hashMapOf("timeOfAppointment" to date.toString())
         return patch(id, map)
     }
 }
