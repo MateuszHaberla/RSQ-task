@@ -48,7 +48,7 @@ class DoctorCrudService(
     }
 
     fun patch(id: Long, doctorChangesMap: HashMap<String, String>): Optional<DoctorDto> {
-        return Optional.of(doctorRepository.findById(id))
+        return doctorRepository.findById(id)
                 .map { doctor -> mapper.convertValue(doctor, Map::class.java) }
                 .map { doctorToUpdateMap -> doctorToUpdateMap.toMutableMap() }
                 .map { doctorToUpdateMap ->

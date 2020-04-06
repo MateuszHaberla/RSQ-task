@@ -60,7 +60,7 @@ class AppointmentCrudService(
     }
 
     fun patch(id: Long, appointmentChangesMap: HashMap<String, String>): Optional<AppointmentDto> {
-        return Optional.of(appointmentRepository.findById(id))
+        return appointmentRepository.findById(id)
                 .map { appointment -> mapper.convertValue(appointment, Map::class.java) }
                 .map { appointmentToUpdateMap -> appointmentToUpdateMap.toMutableMap() }
                 .map { appointmentToUpdateMap ->
