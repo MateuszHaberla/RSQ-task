@@ -172,7 +172,7 @@ internal class AppointmentCrudServiceTest {
                 .thenReturn(optionalOfAppointment)
 
         val immutableMapOfAppointment = mapOf("id" to 1, "timeOfAppointment" to currentTime, "officeAddress" to "Poznań", "doctor" to doctor, "patient" to patient)
-        `when`(objectMapper.convertValue(any(Optional::class.java), eq(Map::class.java)))
+        `when`(objectMapper.convertValue(any(Appointment::class.java), eq(Map::class.java)))
                 .thenReturn(immutableMapOfAppointment)
 
         val appointmentAfterPatch = Appointment(1, currentTime.plusHours(1), "Wrocław", doctor, patient)
@@ -197,7 +197,7 @@ internal class AppointmentCrudServiceTest {
 
         verify(appointmentRepository).findById(any())
         verify(appointmentRepository).save(any())
-        verify(objectMapper).convertValue(any(Optional::class.java), eq(Map::class.java))
+        verify(objectMapper).convertValue(any(Appointment::class.java), eq(Map::class.java))
         verify(objectMapper).convertValue(any(LinkedHashMap::class.java), eq(Appointment::class.java))
         verify(appointmentMapper).mapAppointmentToDto(appointmentAfterPatch)
     }
