@@ -161,7 +161,7 @@ internal class PatientCrudServiceTest {
                 .thenReturn(optionalOfPatient)
 
         val immutableMapOfPatient = mapOf("id" to 1, "name" to "Mateusz", "surname" to "Haberla", "address" to "Poznań")
-        `when`(objectMapper.convertValue(any(Optional::class.java), eq(Map::class.java)))
+        `when`(objectMapper.convertValue(any(Patient::class.java), eq(Map::class.java)))
                 .thenReturn(immutableMapOfPatient)
 
         val patientAfterPatch = Patient(1, "Piotr", "Haberla", "Wrocław")
@@ -186,7 +186,7 @@ internal class PatientCrudServiceTest {
 
         verify(patientRepository).findById(any())
         verify(patientRepository).save(any())
-        verify(objectMapper).convertValue(any(Optional::class.java), eq(Map::class.java))
+        verify(objectMapper).convertValue(any(Patient::class.java), eq(Map::class.java))
         verify(objectMapper).convertValue(any(LinkedHashMap::class.java), eq(Patient::class.java))
         verify(patientMapper).mapPatientToDto(patientAfterPatch)
     }
