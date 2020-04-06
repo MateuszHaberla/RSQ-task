@@ -1,7 +1,6 @@
 package com.mateuszhaberla.recruitmenttaskrsq.controller
 
 import com.mateuszhaberla.recruitmenttaskrsq.dto.DoctorDto
-import com.mateuszhaberla.recruitmenttaskrsq.model.Doctor
 import com.mateuszhaberla.recruitmenttaskrsq.model.Specialization
 import com.mateuszhaberla.recruitmenttaskrsq.service.DoctorCrudService
 import org.junit.jupiter.api.Assertions
@@ -24,7 +23,6 @@ internal class DoctorCrudControllerTest {
     private lateinit var doctorCrudService: DoctorCrudService
     private lateinit var doctorCrudController: DoctorCrudController
 
-    val doctor = Doctor(1, "Mateusz", "Haberla", Specialization.ALLERGY_AND_IMMUNOLOGY)
     val doctorDto = DoctorDto(1, "Mateusz", "Haberla", Specialization.ALLERGY_AND_IMMUNOLOGY)
 
     @BeforeEach
@@ -37,26 +35,26 @@ internal class DoctorCrudControllerTest {
     @Test
     fun create() {
         //given
-        val expectedResult = ResponseEntity.status(HttpStatus.CREATED).body(doctor)
+        val expectedResult = ResponseEntity.status(HttpStatus.CREATED).body(doctorDto)
 
-        `when`(doctorCrudService.create(doctor))
-                .thenReturn(doctor)
+        `when`(doctorCrudService.create(doctorDto))
+                .thenReturn(doctorDto)
 
         //when
-        val createdDoctorResponse = doctorCrudController.create(doctor)
+        val createdDoctorResponse = doctorCrudController.create(doctorDto)
 
         //then
         Assertions.assertEquals(expectedResult, createdDoctorResponse)
-        verify(doctorCrudService).create(doctor)
+        verify(doctorCrudService).create(doctorDto)
     }
 
     @Test
     fun readWhenIdExist() {
         //given
-        val expectedResult = ResponseEntity.ok(doctor)
+        val expectedResult = ResponseEntity.ok(doctorDto)
 
         `when`(doctorCrudService.read(1))
-                .thenReturn(Optional.of(doctor))
+                .thenReturn(Optional.of(doctorDto))
         //when
         val readDoctorResponse = doctorCrudController.read(1)
 
@@ -68,7 +66,7 @@ internal class DoctorCrudControllerTest {
     @Test
     fun readWhenIdDoesNotExist() {
         //given
-        val expectedResult = ResponseEntity.status(HttpStatus.NOT_FOUND).build<Doctor>()
+        val expectedResult = ResponseEntity.status(HttpStatus.NOT_FOUND).build<DoctorDto>()
 
         `when`(doctorCrudService.read(2))
                 .thenReturn(Optional.empty())
@@ -84,10 +82,10 @@ internal class DoctorCrudControllerTest {
     @Test
     fun updateWhenDoctorExist() {
         //given
-        val expectedResult = ResponseEntity.ok(doctor)
+        val expectedResult = ResponseEntity.ok(doctorDto)
 
         `when`(doctorCrudService.update(doctorDto))
-                .thenReturn(Optional.of(doctor))
+                .thenReturn(Optional.of(doctorDto))
         //when
         val updateDoctorResponse = doctorCrudController.update(doctorDto)
 
@@ -99,7 +97,7 @@ internal class DoctorCrudControllerTest {
     @Test
     fun updateWhenDoctorDoesNotExist() {
         //given
-        val expectedResult = ResponseEntity.status(HttpStatus.NOT_FOUND).build<Doctor>()
+        val expectedResult = ResponseEntity.status(HttpStatus.NOT_FOUND).build<DoctorDto>()
 
         `when`(doctorCrudService.update(doctorDto))
                 .thenReturn(Optional.empty())
@@ -114,7 +112,7 @@ internal class DoctorCrudControllerTest {
     @Test
     fun deleteWhenDoctorExist() {
         //given
-        val expectedResult = ResponseEntity.status(HttpStatus.NO_CONTENT).build<Doctor>()
+        val expectedResult = ResponseEntity.status(HttpStatus.NO_CONTENT).build<DoctorDto>()
 
         `when`(doctorCrudService.delete(1))
                 .thenReturn(true)
@@ -130,7 +128,7 @@ internal class DoctorCrudControllerTest {
     @Test
     fun deleteWhenDoctorDoesNotExist() {
         //given
-        val expectedResult = ResponseEntity.status(HttpStatus.NOT_FOUND).build<Doctor>()
+        val expectedResult = ResponseEntity.status(HttpStatus.NOT_FOUND).build<DoctorDto>()
 
         `when`(doctorCrudService.delete(2))
                 .thenReturn(false)
@@ -146,7 +144,7 @@ internal class DoctorCrudControllerTest {
     @Test
     fun patchWhenDoctorExist() {
         //given
-        val doctorAfterPatch = Doctor(1, "Marian", "Kowalski", Specialization.ALLERGY_AND_IMMUNOLOGY)
+        val doctorAfterPatch = DoctorDto(1, "Marian", "Kowalski", Specialization.ALLERGY_AND_IMMUNOLOGY)
         val expectedResult = ResponseEntity.ok(doctorAfterPatch)
         val mapOfChanges = hashMapOf("name" to "Marian", "surname" to "Kowalski")
 
@@ -163,7 +161,7 @@ internal class DoctorCrudControllerTest {
     @Test
     fun patchWhenDoctorDoesNotExist() {
         //given
-        val expectedResult = ResponseEntity.status(HttpStatus.NOT_FOUND).build<Doctor>()
+        val expectedResult = ResponseEntity.status(HttpStatus.NOT_FOUND).build<DoctorDto>()
         val mapOfChanges = hashMapOf("name" to "Marian", "surname" to "Kowalski")
 
         `when`(doctorCrudService.patch(2, mapOfChanges))

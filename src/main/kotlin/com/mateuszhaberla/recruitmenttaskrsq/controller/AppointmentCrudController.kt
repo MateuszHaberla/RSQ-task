@@ -26,8 +26,8 @@ class AppointmentCrudController(
 
     @PostMapping("/appointments")
     @ApiOperation(value = "Create Appointments")
-    fun create(@RequestBody appointment: Appointment): ResponseEntity<Appointment> {
-        val createdPatient = appointmentCrudService.create(appointment)
+    fun create(@RequestBody appointmentDto: AppointmentDto): ResponseEntity<AppointmentDto> {
+        val createdPatient = appointmentCrudService.create(appointmentDto)
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(createdPatient)
@@ -35,8 +35,8 @@ class AppointmentCrudController(
 
     @GetMapping(value = ["/appointments", "/appointments/{id}"])
     @ApiOperation(value = "Read All Appointments")
-    fun readAllOrOne(@PathVariable(value = "id", required = false) id: Long?): ResponseEntity<MutableList<Appointment>> {
-        val listOfAppointments: MutableList<Appointment> = Optional.ofNullable(id)
+    fun readAllOrOne(@PathVariable(value = "id", required = false) id: Long?): ResponseEntity<MutableList<AppointmentDto>> {
+        val listOfAppointments: MutableList<AppointmentDto> = Optional.ofNullable(id)
                 .map { appointmentCrudService.read(id) }
                 .orElseGet { appointmentCrudService.readAll() }
 
@@ -50,7 +50,7 @@ class AppointmentCrudController(
 
     @PutMapping("/appointments")
     @ApiOperation(value = "Update Appointments")
-    fun update(@RequestBody appointmentDto: AppointmentDto): ResponseEntity<Appointment> {
+    fun update(@RequestBody appointmentDto: AppointmentDto): ResponseEntity<AppointmentDto> {
         return appointmentCrudService.update(appointmentDto)
                 .map { ResponseEntity.ok(it) }
                 .orElseGet { ResponseEntity.status(HttpStatus.NOT_FOUND).build() }
@@ -66,7 +66,7 @@ class AppointmentCrudController(
 
     @PatchMapping("/appointments/{id}")
     @ApiOperation(value = "Patch Appointments")
-    fun patch(@PathVariable("id") id: Long, @RequestBody appointmentChangesMap: HashMap<String, String>): ResponseEntity<Appointment> {
+    fun patch(@PathVariable("id") id: Long, @RequestBody appointmentChangesMap: HashMap<String, String>): ResponseEntity<AppointmentDto> {
         return appointmentCrudService.patch(id, appointmentChangesMap)
                 .map { ResponseEntity.ok(it) }
                 .orElseGet { ResponseEntity.status(HttpStatus.NOT_FOUND).build() }
@@ -75,7 +75,7 @@ class AppointmentCrudController(
 
     @PatchMapping("/timeChange/{id}")
     @ApiOperation(value = "Patch Appointments")
-    fun changeTimeOfAppointment(@PathVariable("id") id: Long, @RequestBody hourOfExistingVisit: LocalDateTime): ResponseEntity<Appointment> {
+    fun changeTimeOfAppointment(@PathVariable("id") id: Long, @RequestBody hourOfExistingVisit: LocalDateTime): ResponseEntity<AppointmentDto> {
         return appointmentCrudService.changeTimeOfAppointment(id, hourOfExistingVisit)
                 .map { ResponseEntity.ok(it) }
                 .orElseGet { ResponseEntity.status(HttpStatus.NOT_FOUND).build() }

@@ -24,8 +24,8 @@ class DoctorCrudController(
 
     @PostMapping("/doctors")
     @ApiOperation(value = "Create Doctor")
-    fun create(@RequestBody doctor: Doctor): ResponseEntity<Doctor> {
-        val createdPatient = doctorCrudService.create(doctor)
+    fun create(@RequestBody doctorDto: DoctorDto): ResponseEntity<DoctorDto> {
+        val createdPatient = doctorCrudService.create(doctorDto)
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(createdPatient)
@@ -33,7 +33,7 @@ class DoctorCrudController(
 
     @GetMapping("/doctors/{id}")
     @ApiOperation(value = "Read Doctor")
-    fun read(@PathVariable("id") id: Long): ResponseEntity<Doctor?> {
+    fun read(@PathVariable("id") id: Long): ResponseEntity<DoctorDto> {
         return doctorCrudService.read(id)
                 .map { ResponseEntity.ok(it) }
                 .orElseGet { ResponseEntity.status(HttpStatus.NOT_FOUND).build() }
@@ -41,7 +41,7 @@ class DoctorCrudController(
 
     @PutMapping("/doctors")
     @ApiOperation(value = "Update Doctor")
-    fun update(@RequestBody doctorDto: DoctorDto): ResponseEntity<Doctor> {
+    fun update(@RequestBody doctorDto: DoctorDto): ResponseEntity<DoctorDto> {
         return doctorCrudService.update(doctorDto)
                 .map { ResponseEntity.ok(it) }
                 .orElseGet { ResponseEntity.status(HttpStatus.NOT_FOUND).build() }
@@ -57,7 +57,7 @@ class DoctorCrudController(
 
     @PatchMapping("/doctors/{id}")
     @ApiOperation(value = "Patch Patient")
-    fun patch(@PathVariable("id") id: Long, @RequestBody doctorChangesMap: HashMap<String, String>): ResponseEntity<Doctor> {
+    fun patch(@PathVariable("id") id: Long, @RequestBody doctorChangesMap: HashMap<String, String>): ResponseEntity<DoctorDto> {
         return doctorCrudService.patch(id, doctorChangesMap)
                 .map { ResponseEntity.ok(it) }
                 .orElseGet { ResponseEntity.status(HttpStatus.NOT_FOUND).build() }

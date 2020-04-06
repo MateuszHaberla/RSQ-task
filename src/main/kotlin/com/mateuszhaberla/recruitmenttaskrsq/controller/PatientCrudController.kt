@@ -24,8 +24,8 @@ class PatientCrudController(
 
     @PostMapping("/patients")
     @ApiOperation(value = "Create Patient")
-    fun create(@RequestBody patient: Patient): ResponseEntity<Patient> {
-        val createdPatient = patientCrudService.create(patient)
+    fun create(@RequestBody patientDto: PatientDto): ResponseEntity<PatientDto> {
+        val createdPatient = patientCrudService.create(patientDto)
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(createdPatient)
@@ -33,7 +33,7 @@ class PatientCrudController(
 
     @GetMapping("/patients/{id}")
     @ApiOperation(value = "Read Patient")
-    fun read(@PathVariable("id") id: Long): ResponseEntity<Patient?> {
+    fun read(@PathVariable("id") id: Long): ResponseEntity<PatientDto> {
         return patientCrudService.read(id)
                 .map { ResponseEntity.ok(it) }
                 .orElseGet { ResponseEntity.status(HttpStatus.NOT_FOUND).build() }
@@ -41,13 +41,13 @@ class PatientCrudController(
 
     @GetMapping("/patients")
     @ApiOperation(value = "Read All Patients")
-    fun readAll(): ResponseEntity<List<Patient>> {
+    fun readAll(): ResponseEntity<List<PatientDto>> {
         return ResponseEntity.ok(patientCrudService.readAll())
     }
 
     @PutMapping("/patients")
     @ApiOperation(value = "Update Patient")
-    fun update(@RequestBody patientDto: PatientDto): ResponseEntity<Patient> {
+    fun update(@RequestBody patientDto: PatientDto): ResponseEntity<PatientDto> {
         return patientCrudService.update(patientDto)
                 .map { ResponseEntity.ok(it) }
                 .orElseGet { ResponseEntity.status(HttpStatus.NOT_FOUND).build() }
@@ -55,7 +55,7 @@ class PatientCrudController(
 
     @DeleteMapping("/patients/{id}")
     @ApiOperation(value = "Delete Patient")
-    fun delete(@PathVariable("id") id: Long): ResponseEntity<Patient> {
+    fun delete(@PathVariable("id") id: Long): ResponseEntity<PatientDto> {
         return if (patientCrudService.delete(id))
             ResponseEntity.status(HttpStatus.NO_CONTENT).build()
         else ResponseEntity.status(HttpStatus.NOT_FOUND).build()
@@ -63,7 +63,7 @@ class PatientCrudController(
 
     @PatchMapping("/patients/{id}")
     @ApiOperation(value = "Patch Patient")
-    fun patch(@PathVariable("id") id: Long, @RequestBody patientChangesMap: HashMap<String, String>): ResponseEntity<Patient> {
+    fun patch(@PathVariable("id") id: Long, @RequestBody patientChangesMap: HashMap<String, String>): ResponseEntity<PatientDto> {
         return patientCrudService.patch(id, patientChangesMap)
                 .map { ResponseEntity.ok(it) }
                 .orElseGet { ResponseEntity.status(HttpStatus.NOT_FOUND).build() }

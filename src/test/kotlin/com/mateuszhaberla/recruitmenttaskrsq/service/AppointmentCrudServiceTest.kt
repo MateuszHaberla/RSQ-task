@@ -15,8 +15,10 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito
+import org.mockito.ArgumentMatchers.*
+import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.time.LocalDateTime
@@ -32,10 +34,11 @@ internal class AppointmentCrudServiceTest {
     private lateinit var appointmentCrudService: AppointmentCrudService
     private lateinit var objectMapper: ObjectMapper
 
+    val currentTime = LocalDateTime.now()
     val patient = Patient(1, "Mateusz", "Haberla", "Poznań")
     val doctor = Doctor(1, "Mateusz", "Haberla", Specialization.ALLERGY_AND_IMMUNOLOGY)
-    val appointment = Appointment(1, LocalDateTime.now(), "Poznań", doctor, patient)
-    val appointmentDto = AppointmentDto(1, LocalDateTime.now(), "Poznań", doctor, patient)
+    val appointment = Appointment(1, currentTime, "Poznań", doctor, patient)
+    val appointmentDto = AppointmentDto(1, currentTime, "Poznań", doctor, patient)
 
     @BeforeEach
     fun setUp() {
@@ -50,74 +53,93 @@ internal class AppointmentCrudServiceTest {
     @Test
     fun create() {
         //given
-        Mockito.`when`(appointmentRepository.save(Mockito.any(Appointment::class.java)))
+        `when`(appointmentMapper.mapDtoToAppointment(appointmentDto))
+                .thenReturn(appointment)
+
+        `when`(appointmentRepository.save(any(Appointment::class.java)))
                 .thenReturn(appointment)
 
         //when
-        val createdAppointment = appointmentCrudService.create(appointment)
+        val createdAppointment = appointmentCrudService.create(appointmentDto)
 
         //then
-        assertTrue(appointment == createdAppointment)
-        Mockito.verify(appointmentRepository).save(Mockito.any(Appointment::class.java))
+        assertTrue(appointmentDto == createdAppointment)
+        verify(appointmentRepository).save(any(Appointment::class.java))
+        verify(appointmentMapper).mapDtoToAppointment(appointmentDto)
     }
 
     @Test
     fun read() {
         //given
-        val expectedAppointments = mutableListOf(appointment)
-        Mockito.`when`(appointmentRepository.findByPatientId(1))
-                .thenReturn(expectedAppointments)
+        val allAppointments = mutableListOf(appointment)
+        `when`(appointmentRepository.findByPatientId(1))
+                .thenReturn(allAppointments)
+
+        `when`(appointmentMapper.mapAppointmentToDto(appointment))
+                .thenReturn(appointmentDto)
 
         //when
-        val appointment = appointmentCrudService.read(1)
+        val appointmentsDto = appointmentCrudService.read(1)
 
         //then
-        assertNotNull(appointment)
-        Mockito.verify(appointmentRepository).findByPatientId(Mockito.any())
+        assertNotNull(appointmentsDto)
+        verify(appointmentRepository).findByPatientId(any())
+        verify(appointmentMapper).mapAppointmentToDto(appointment)
     }
 
     @Test
     fun readAll() {
         //given
-        val expectedAppointments = mutableListOf(appointment)
-        Mockito.`when`(appointmentRepository.findAll())
-                .thenReturn(expectedAppointments)
+        val allAppointments = mutableListOf(appointment)
+        `when`(appointmentRepository.findAll())
+                .thenReturn(allAppointments)
+
+        `when`(appointmentMapper.mapAppointmentToDto(appointment))
+                .thenReturn(appointmentDto)
 
         //when
-        val appointment = appointmentCrudService.readAll()
+        val appointmentsDto = appointmentCrudService.readAll()
+        val expectedPatients = mutableListOf(appointmentDto)
 
         //then
-        assertNotNull(appointment)
-        Mockito.verify(appointmentRepository).findAll()
+        assertNotNull(appointmentsDto)
+        assertEquals(expectedPatients, appointmentsDto)
+        verify(appointmentRepository).findAll()
+        verify(appointmentMapper).mapAppointmentToDto(appointment)
     }
 
     @Test
     fun update() {
         //given
-        Mockito.`when`(appointmentMapper.mapDtoToAppointment(appointmentDto))
+        `when`(appointmentMapper.mapDtoToAppointment(appointmentDto))
                 .thenReturn(appointment)
 
-        Mockito.`when`(appointmentRepository.findById(1))
+        `when`(appointmentRepository.findById(1))
                 .thenReturn(Optional.of(appointment))
 
-        Mockito.`when`(appointmentRepository.save(Mockito.any(Appointment::class.java)))
+        `when`(appointmentRepository.save(any(Appointment::class.java)))
                 .thenReturn(appointment)
 
-        //when
-        val updatedAppointment = appointmentCrudService.update(appointmentDto)
-        val appoitment = Optional.of(appointment)
-        //then
-        assertTrue(appoitment == updatedAppointment)
+        `when`(appointmentMapper.mapAppointmentToDto(appointment))
+                .thenReturn(appointmentDto)
 
-        Mockito.verify(appointmentMapper).mapDtoToAppointment(appointmentDto)
-        Mockito.verify(appointmentRepository).findById(Mockito.any())
-        Mockito.verify(appointmentRepository).save(Mockito.any(Appointment::class.java))
+        //when
+        val updatedAppointmentDto = appointmentCrudService.update(appointmentDto)
+        val expectedResult = Optional.of(appointmentDto)
+
+        //then
+        assertTrue(expectedResult == updatedAppointmentDto)
+
+        verify(appointmentMapper).mapDtoToAppointment(appointmentDto)
+        verify(appointmentRepository).findById(any())
+        verify(appointmentRepository).save(any(Appointment::class.java))
+        verify(appointmentMapper).mapAppointmentToDto(appointment)
     }
 
     @Test
     fun deleteWhenIdExist() {
         //given
-        Mockito.`when`(appointmentRepository.existsById(1))
+        `when`(appointmentRepository.existsById(1))
                 .thenReturn(true)
 
         //when
@@ -125,13 +147,13 @@ internal class AppointmentCrudServiceTest {
 
         //then
         assertTrue(exists)
-        Mockito.verify(appointmentRepository).existsById(ArgumentMatchers.any())
+        verify(appointmentRepository).existsById(any())
     }
 
     @Test
     fun deleteWhenIdDoesNotExist() {
         //given
-        Mockito.`when`(appointmentRepository.existsById(2))
+        `when`(appointmentRepository.existsById(2))
                 .thenReturn(false)
 
         //when
@@ -139,40 +161,44 @@ internal class AppointmentCrudServiceTest {
 
         //then
         assertTrue(!exists)
-        Mockito.verify(appointmentRepository).existsById(ArgumentMatchers.any())
+        verify(appointmentRepository).existsById(any())
     }
 
     @Test
     fun patch() {
         //given
-        val currentTime = LocalDateTime.now()
         val optionalOfAppointment = Optional.of(appointment)
-        Mockito.`when`(appointmentRepository.findById(1))
+        `when`(appointmentRepository.findById(1))
                 .thenReturn(optionalOfAppointment)
 
         val immutableMapOfAppointment = mapOf("id" to 1, "timeOfAppointment" to currentTime, "officeAddress" to "Poznań", "doctor" to doctor, "patient" to patient)
-        Mockito.`when`(objectMapper.convertValue(Mockito.any(Optional::class.java), ArgumentMatchers.eq(Map::class.java)))
+        `when`(objectMapper.convertValue(any(Optional::class.java), eq(Map::class.java)))
                 .thenReturn(immutableMapOfAppointment)
 
-        val appoitemtnaAfterPatch = Appointment(1, currentTime, "Wrocław", doctor, patient)
-        Mockito.`when`(objectMapper.convertValue(Mockito.any(LinkedHashMap::class.java), ArgumentMatchers.eq(Appointment::class.java)))
-                .thenReturn(appoitemtnaAfterPatch)
+        val appointmentAfterPatch = Appointment(1, currentTime.plusHours(1), "Wrocław", doctor, patient)
+        `when`(objectMapper.convertValue(any(LinkedHashMap::class.java), eq(Appointment::class.java)))
+                .thenReturn(appointmentAfterPatch)
 
-        Mockito.`when`(appointmentRepository.save(appoitemtnaAfterPatch))
-                .thenReturn(appoitemtnaAfterPatch)
+        `when`(appointmentRepository.save(appointmentAfterPatch))
+                .thenReturn(appointmentAfterPatch)
+
+        val appointmentDtoAfterPatch = AppointmentDto(1, currentTime.plusHours(1), "Wrocław", doctor, patient)
+        `when`(appointmentMapper.mapAppointmentToDto(appointmentAfterPatch))
+                .thenReturn(appointmentDtoAfterPatch)
 
         val mapOfChanges = hashMapOf("timeOfAppointment" to currentTime.plusHours(1).toString(), "address" to "Wrocław")
 
         //when
-        val patchedAppointment = appointmentCrudService.patch(1, mapOfChanges)
-        val expectedResult = Optional.of(appoitemtnaAfterPatch)
+        val patchedAppointmentDto: Optional<AppointmentDto> = appointmentCrudService.patch(1, mapOfChanges)
+        val expectedResult = Optional.of(appointmentDtoAfterPatch)
 
         //then
-        assertEquals(expectedResult, patchedAppointment)
+        assertEquals(expectedResult, patchedAppointmentDto)
 
-        Mockito.verify(appointmentRepository).findById(Mockito.any())
-        Mockito.verify(appointmentRepository).save(Mockito.any())
-        Mockito.verify(objectMapper).convertValue(Mockito.any(Optional::class.java), ArgumentMatchers.eq(Map::class.java))
-        Mockito.verify(objectMapper).convertValue(Mockito.any(LinkedHashMap::class.java), ArgumentMatchers.eq(Appointment::class.java))
+        verify(appointmentRepository).findById(any())
+        verify(appointmentRepository).save(any())
+        verify(objectMapper).convertValue(any(Optional::class.java), eq(Map::class.java))
+        verify(objectMapper).convertValue(any(LinkedHashMap::class.java), eq(Appointment::class.java))
+        verify(appointmentMapper).mapAppointmentToDto(appointmentAfterPatch)
     }
 }

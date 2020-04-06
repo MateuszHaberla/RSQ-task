@@ -44,15 +44,19 @@ internal class PatientCrudServiceTest {
     @Test
     fun create() {
         //given
+        `when`(patientMapper.mapDtoToPatient(patientDto))
+                .thenReturn(patient)
+
         `when`(patientRepository.save(any(Patient::class.java)))
                 .thenReturn(patient)
 
         //when
-        val createdPatient = patientCrudService.create(patient)
+        val createdPatientDto = patientCrudService.create(patientDto)
 
         //then
-        assertTrue(patient == createdPatient)
+        assertTrue(patientDto == createdPatientDto)
         verify(patientRepository).save(any(Patient::class.java))
+        verify(patientMapper).mapDtoToPatient(patientDto)
     }
 
     @Test
@@ -61,27 +65,36 @@ internal class PatientCrudServiceTest {
         `when`(patientRepository.findById(1))
                 .thenReturn(Optional.of(patient))
 
+        `when`(patientMapper.mapPatientToDto(patient))
+                .thenReturn(patientDto)
+
         //when
-        val patient = patientCrudService.read(1)
+        val patientDto = patientCrudService.read(1)
 
         //then
-        assertNotNull(patient)
+        assertNotNull(patientDto)
         verify(patientRepository).findById(any())
+        verify(patientMapper).mapPatientToDto(patient)
     }
 
     @Test
     fun readAll() {
         //given
-        val expectedPatients = mutableListOf(patient)
+        val allPatients = mutableListOf(patient)
         `when`(patientRepository.findAll())
-                .thenReturn(expectedPatients)
+                .thenReturn(allPatients)
+
+        `when`(patientMapper.mapPatientToDto(patient))
+                .thenReturn(patientDto)
 
         // when
-        val allPatients = patientCrudService.readAll()
+        val allPatientsDto = patientCrudService.readAll()
+        val expectedPatients = mutableListOf(patientDto)
 
         //then
-        assertEquals(expectedPatients, allPatients)
+        assertEquals(expectedPatients, allPatientsDto)
         verify(patientRepository).findAll()
+        verify(patientMapper).mapPatientToDto(patient)
     }
 
     @Test
@@ -96,15 +109,20 @@ internal class PatientCrudServiceTest {
         `when`(patientRepository.save(any(Patient::class.java)))
                 .thenReturn(patient)
 
+        `when`(patientMapper.mapPatientToDto(patient))
+                .thenReturn(patientDto)
+
         //when
-        val updatedPatient = patientCrudService.update(patientDto).get()
+        val updatedPatientDto = patientCrudService.update(patientDto)
+        val expectedResult = Optional.of(patientDto)
 
         //then
-        assertTrue(patient == updatedPatient)
+        assertTrue(expectedResult == updatedPatientDto)
 
         verify(patientMapper).mapDtoToPatient(patientDto)
         verify(patientRepository).findById(any())
         verify(patientRepository).save(any(Patient::class.java))
+        verify(patientMapper).mapPatientToDto(patient)
     }
 
     @Test
@@ -153,11 +171,15 @@ internal class PatientCrudServiceTest {
         `when`(patientRepository.save(patientAfterPatch))
                 .thenReturn(patientAfterPatch)
 
+        val patientDtoAfterPatch = PatientDto(1, "Piotr", "Haberla", "Wrocław")
+        `when`(patientMapper.mapPatientToDto(patientAfterPatch))
+                .thenReturn(patientDtoAfterPatch)
+
         val mapOfChanges = hashMapOf("name" to "Piotr", "address" to "Wrocław")
 
         //when
         val patchedPatient = patientCrudService.patch(1, mapOfChanges)
-        val expectedResult = Optional.of(patientAfterPatch)
+        val expectedResult = Optional.of(patientDtoAfterPatch)
 
         //then
         assertEquals(expectedResult, patchedPatient)
@@ -166,5 +188,6 @@ internal class PatientCrudServiceTest {
         verify(patientRepository).save(any())
         verify(objectMapper).convertValue(any(Optional::class.java), eq(Map::class.java))
         verify(objectMapper).convertValue(any(LinkedHashMap::class.java), eq(Patient::class.java))
+        verify(patientMapper).mapPatientToDto(patientAfterPatch)
     }
 }

@@ -1,15 +1,15 @@
 package com.mateuszhaberla.recruitmenttaskrsq.controller
 
 import com.mateuszhaberla.recruitmenttaskrsq.dto.PatientDto
-import com.mateuszhaberla.recruitmenttaskrsq.model.Patient
 import com.mateuszhaberla.recruitmenttaskrsq.service.PatientCrudService
-import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.verify
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -23,7 +23,6 @@ internal class PatientCrudControllerTest {
     private lateinit var patientCrudService: PatientCrudService
     private lateinit var patientCrudController: PatientCrudController
 
-    val patient = Patient(1, "Mateusz", "Haberla", "Poznań")
     val patientDto = PatientDto(1, "Mateusz", "Haberla", "Poznań")
 
     @BeforeEach
@@ -36,55 +35,55 @@ internal class PatientCrudControllerTest {
     @Test
     fun create() {
         //given
-        val expectedResult = ResponseEntity.status(HttpStatus.CREATED).body(patient)
+        val expectedResult = ResponseEntity.status(HttpStatus.CREATED).body(patientDto)
 
-        Mockito.`when`(patientCrudService.create(patient))
-                .thenReturn(patient)
+        `when`(patientCrudService.create(patientDto))
+                .thenReturn(patientDto)
 
         //when
-        val createdDoctorResponse = patientCrudController.create(patient)
+        val createdDoctorResponse = patientCrudController.create(patientDto)
 
         //then
         assertEquals(expectedResult, createdDoctorResponse)
-        Mockito.verify(patientCrudService).create(patient)
+        verify(patientCrudService).create(patientDto)
     }
 
     @Test
     fun readAll() {
         //given
-        val expectedResult = ResponseEntity.ok(mutableListOf(patient))
+        val expectedResult = ResponseEntity.ok(mutableListOf(patientDto))
 
-        Mockito.`when`(patientCrudService.readAll())
-                .thenReturn(mutableListOf(patient))
+        `when`(patientCrudService.readAll())
+                .thenReturn(mutableListOf(patientDto))
         //when
         val readDoctorResponse = patientCrudController.readAll()
 
         //then
         assertEquals(expectedResult, readDoctorResponse)
-        Mockito.verify(patientCrudService).readAll()
+        verify(patientCrudService).readAll()
     }
 
     @Test
     fun readWhenIdExist() {
         //given
-        val expectedResult = ResponseEntity.ok(patient)
+        val expectedResult = ResponseEntity.ok(patientDto)
 
-        Mockito.`when`(patientCrudService.read(1))
-                .thenReturn(Optional.of(patient))
+        `when`(patientCrudService.read(1))
+                .thenReturn(Optional.of(patientDto))
         //when
         val readDoctorResponse = patientCrudController.read(1)
 
         //then
         assertEquals(expectedResult, readDoctorResponse)
-        Mockito.verify(patientCrudService).read(1)
+        verify(patientCrudService).read(1)
     }
 
     @Test
     fun readWhenIdDoesNotExist() {
         //given
-        val expectedResult = ResponseEntity.status(HttpStatus.NOT_FOUND).build<Patient>()
+        val expectedResult = ResponseEntity.status(HttpStatus.NOT_FOUND).build<PatientDto>()
 
-        Mockito.`when`(patientCrudService.read(2))
+        `when`(patientCrudService.read(2))
                 .thenReturn(Optional.empty())
 
         //when
@@ -92,45 +91,45 @@ internal class PatientCrudControllerTest {
 
         //then
         assertEquals(expectedResult, readDoctorResponse)
-        Mockito.verify(patientCrudService).read(2)
+        verify(patientCrudService).read(2)
     }
 
     @Test
     fun updateWhenPatientExist() {
         //given
-        val expectedResult = ResponseEntity.ok(patient)
+        val expectedResult = ResponseEntity.ok(patientDto)
 
-        Mockito.`when`(patientCrudService.update(patientDto))
-                .thenReturn(Optional.of(patient))
+        `when`(patientCrudService.update(patientDto))
+                .thenReturn(Optional.of(patientDto))
         //when
         val updateDoctorResponse = patientCrudController.update(patientDto)
 
         //then
         assertEquals(expectedResult, updateDoctorResponse)
-        Mockito.verify(patientCrudService).update(patientDto)
+        verify(patientCrudService).update(patientDto)
     }
 
     @Test
     fun updateWhenPatientDoesNotExist() {
         //given
-        val expectedResult = ResponseEntity.status(HttpStatus.NOT_FOUND).build<Patient>()
+        val expectedResult = ResponseEntity.status(HttpStatus.NOT_FOUND).build<PatientDto>()
 
-        Mockito.`when`(patientCrudService.update(patientDto))
+        `when`(patientCrudService.update(patientDto))
                 .thenReturn(Optional.empty())
         //when
         val updateDoctorResponse = patientCrudController.update(patientDto)
 
         //then
         assertEquals(expectedResult, updateDoctorResponse)
-        Mockito.verify(patientCrudService).update(patientDto)
+        verify(patientCrudService).update(patientDto)
     }
 
     @Test
     fun deleteWhenPatientExist() {
         //given
-        val expectedResult = ResponseEntity.status(HttpStatus.NO_CONTENT).build<Patient>()
+        val expectedResult = ResponseEntity.status(HttpStatus.NO_CONTENT).build<PatientDto>()
 
-        Mockito.`when`(patientCrudService.delete(1))
+        `when`(patientCrudService.delete(1))
                 .thenReturn(true)
 
         //when
@@ -138,15 +137,15 @@ internal class PatientCrudControllerTest {
 
         //then
         assertEquals(expectedResult, deleteDoctorResponse)
-        Mockito.verify(patientCrudService).delete(1)
+        verify(patientCrudService).delete(1)
     }
 
     @Test
     fun deleteWhenPatientDoesNotExist() {
         //given
-        val expectedResult = ResponseEntity.status(HttpStatus.NOT_FOUND).build<Patient>()
+        val expectedResult = ResponseEntity.status(HttpStatus.NOT_FOUND).build<PatientDto>()
 
-        Mockito.`when`(patientCrudService.delete(2))
+        `when`(patientCrudService.delete(2))
                 .thenReturn(false)
 
         //when
@@ -154,33 +153,33 @@ internal class PatientCrudControllerTest {
 
         //then
         assertEquals(expectedResult, deleteDoctorResponse)
-        Mockito.verify(patientCrudService).delete(2)
+        verify(patientCrudService).delete(2)
     }
 
     @Test
     fun patchWhenPatientExist() {
         //given
-        val doctorAfterPatch =Patient(1, "Marian", "Kowalski", "Poznań")
+        val doctorAfterPatch = PatientDto(1, "Marian", "Kowalski", "Poznań")
         val expectedResult = ResponseEntity.ok(doctorAfterPatch)
         val mapOfChanges = hashMapOf("name" to "Marian", "surname" to "Kowalski")
 
-        Mockito.`when`(patientCrudService.patch(1, mapOfChanges))
+        `when`(patientCrudService.patch(1, mapOfChanges))
                 .thenReturn(Optional.of(doctorAfterPatch))
         //when
         val patchDoctorResponse = patientCrudController.patch(1, mapOfChanges)
 
         //then
         assertEquals(expectedResult, patchDoctorResponse)
-        Mockito.verify(patientCrudService).patch(1, mapOfChanges)
+        verify(patientCrudService).patch(1, mapOfChanges)
     }
 
     @Test
     fun patchWhenPatientDoesNotExist() {
         //given
-        val expectedResult = ResponseEntity.status(HttpStatus.NOT_FOUND).build<Patient>()
+        val expectedResult = ResponseEntity.status(HttpStatus.NOT_FOUND).build<PatientDto>()
         val mapOfChanges = hashMapOf("name" to "Marian", "surname" to "Kowalski")
 
-        Mockito.`when`(patientCrudService.patch(2, mapOfChanges))
+        `when`(patientCrudService.patch(2, mapOfChanges))
                 .thenReturn(Optional.empty())
 
         //when
@@ -188,6 +187,6 @@ internal class PatientCrudControllerTest {
 
         //then
         assertEquals(expectedResult, patchDoctorResponse)
-        Mockito.verify(patientCrudService).patch(2, mapOfChanges)
+        verify(patientCrudService).patch(2, mapOfChanges)
     }
 }

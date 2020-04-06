@@ -17,18 +17,25 @@ class DoctorCrudService(
         private val doctorRepository: DoctorRepository,
         private val mapper: ObjectMapper = Config().getObjectMapper()
 ) {
-    fun create(doctor: Doctor): Doctor {
-        return doctorRepository.save(doctor)
+    fun create(doctorDto: DoctorDto): DoctorDto {
+        val doctor = doctorMapper.mapDtoToDoctor(doctorDto)
+        doctorRepository.save(doctor)
+
+        return doctorDto
     }
 
-    fun read(id: Long): Optional<Doctor> {
-        return doctorRepository.findById(id)
+    fun read(id: Long): Optional<DoctorDto> {
+        val optionalOfDoctor: Optional<Doctor> = doctorRepository.findById(id)
+
+        return optionalOfDoctor.map { doctorMapper.mapDoctorToDto(it) }
     }
 
-    fun update(doctorDto: DoctorDto): Optional<Doctor> {
+    fun update(doctorDto: DoctorDto): Optional<DoctorDto> {
         val patientToUpdate: Doctor = doctorMapper.mapDtoToDoctor(doctorDto)
+
         return doctorRepository.findById(patientToUpdate.id)
                 .map { doctorRepository.save(patientToUpdate) }
+                .map { doctorMapper.mapDoctorToDto(it) }
     }
 
     fun delete(id: Long): Boolean {
@@ -40,7 +47,7 @@ class DoctorCrudService(
         }
     }
 
-    fun patch(id: Long, doctorChangesMap: HashMap<String, String>): Optional<Doctor> {
+    fun patch(id: Long, doctorChangesMap: HashMap<String, String>): Optional<DoctorDto> {
         return Optional.of(doctorRepository.findById(id))
                 .map { doctor -> mapper.convertValue(doctor, Map::class.java) }
                 .map { doctorToUpdateMap -> doctorToUpdateMap.toMutableMap() }
@@ -50,5 +57,6 @@ class DoctorCrudService(
                 }
                 .map { doctorToUpdateMap -> mapper.convertValue(doctorToUpdateMap, Doctor::class.java) }
                 .map { doctorRepository.save(it) }
+                .map { doctorMapper.mapDoctorToDto(it) }
     }
 }

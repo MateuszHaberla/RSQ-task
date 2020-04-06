@@ -45,15 +45,19 @@ internal class DoctorCrudServiceTest {
     @Test
     fun create() {
         //given
+        `when`(doctorMapper.mapDtoToDoctor(doctorDto))
+                .thenReturn(doctor)
+
         `when`(doctorRepository.save(any(Doctor::class.java)))
                 .thenReturn(doctor)
 
         //when
-        val createdDoctor = doctorCrudService.create(doctor)
+        val createdDoctor = doctorCrudService.create(doctorDto)
 
         //then
-        assertTrue(doctor == createdDoctor)
+        assertTrue(doctorDto == createdDoctor)
         verify(doctorRepository).save(any(Doctor::class.java))
+        verify(doctorMapper).mapDtoToDoctor(doctorDto)
     }
 
     @Test
@@ -62,12 +66,16 @@ internal class DoctorCrudServiceTest {
         `when`(doctorRepository.findById(1))
                 .thenReturn(Optional.of(doctor))
 
+        `when`(doctorMapper.mapDoctorToDto(doctor))
+                .thenReturn(doctorDto)
+
         //when
-        val doctor = doctorCrudService.read(1)
+        val doctorDto = doctorCrudService.read(1)
 
         //then
-        assertNotNull(doctor)
+        assertNotNull(doctorDto)
         verify(doctorRepository).findById(any())
+        verify(doctorMapper).mapDoctorToDto(doctor)
     }
 
     @Test
@@ -82,15 +90,20 @@ internal class DoctorCrudServiceTest {
         `when`(doctorRepository.save(any(Doctor::class.java)))
                 .thenReturn(doctor)
 
+        `when`(doctorMapper.mapDoctorToDto(doctor))
+                .thenReturn(doctorDto)
+
         //when
-        val updatedDoctor = doctorCrudService.update(doctorDto).get()
+        val updatedDoctorDto = doctorCrudService.update(doctorDto)
+        val expectedResult = Optional.of(doctorDto)
 
         //then
-        assertTrue(doctor == updatedDoctor)
+        assertTrue(expectedResult == updatedDoctorDto)
 
         verify(doctorMapper).mapDtoToDoctor(doctorDto)
         verify(doctorRepository).findById(any())
         verify(doctorRepository).save(any(Doctor::class.java))
+        verify(doctorMapper).mapDoctorToDto(doctor)
     }
 
     @Test
@@ -139,18 +152,23 @@ internal class DoctorCrudServiceTest {
         `when`(doctorRepository.save(doctorAfterPatch))
                 .thenReturn(doctorAfterPatch)
 
+        val doctorDtoAfterPatch = DoctorDto(1, "Piotr", "Haberla", Specialization.PEDIATRICS)
+        `when`(doctorMapper.mapDoctorToDto(doctorAfterPatch))
+                .thenReturn(doctorDtoAfterPatch)
+
         val mapOfChanges = hashMapOf("name" to "Piotr", "specialization" to Specialization.PEDIATRICS.name)
 
         //when
-        val patchedDoctor = doctorCrudService.patch(1, mapOfChanges)
-        val expectedResult = Optional.of(doctorAfterPatch)
+        val patchedDoctorDto = doctorCrudService.patch(1, mapOfChanges)
+        val expectedResult = Optional.of(doctorDtoAfterPatch)
 
         //then
-        assertEquals(expectedResult, patchedDoctor)
+        assertEquals(expectedResult, patchedDoctorDto)
 
         verify(doctorRepository).findById(any())
         verify(doctorRepository).save(any())
         verify(objectMapper).convertValue(any(Optional::class.java), eq(Map::class.java))
         verify(objectMapper).convertValue(any(LinkedHashMap::class.java), eq(Doctor::class.java))
+        verify(doctorMapper).mapDoctorToDto(doctorAfterPatch)
     }
 }
