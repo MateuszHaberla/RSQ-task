@@ -21,5 +21,6 @@ data class Doctor(
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     val specialization: Specialization,
-    val dupa: String
+    val dupa: String,
+    val dupadupa: Int
 )
